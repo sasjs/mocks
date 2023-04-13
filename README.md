@@ -13,6 +13,13 @@ Example contents of a `.env` file:
 # options: [sas9|sasviya]
 MOCK_SERVER_TYPE=sas9
 
+# Path to working directory
+# This location is for SAS WORK, staged files, DRIVE, configuration etc
+SASJS_ROOT=./sasjs_root
+
+# This location is for files
+DRIVE_LOCATION=./sasjs_root/drive
+
 # LOG_FORMAT_MORGAN options: [combined|common|dev|short|tiny] default: `common`
 # Docs: https://www.npmjs.com/package/morgan#predefined-formats
 LOG_FORMAT_MORGAN=

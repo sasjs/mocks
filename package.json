@@ -2,10 +2,10 @@
   "name": "mocks",
   "version": "0.0.1",
   "description": "Mocks of SAS",
-  "main": "./src/app.ts",
+  "main": "./src/server.ts",
   "scripts": {
-    "start": "NODE_ENV=development nodemon ./src/app.ts",
-    "start:prod": "node ./build/src/app.js",
+    "start": "NODE_ENV=development nodemon ./src/server.ts",
+    "start:prod": "node ./build/src/server.js",
     "build": "rimraf build && tsc",
     "lint:fix": "npx prettier --write \"src/**/*.{ts,tsx,js,jsx,html,css,sass,less,yml,md,graphql}\"",
     "lint": "npx prettier --check \"src/**/*.{ts,tsx,js,jsx,html,css,sass,less,yml,md,graphql}\""

@@ -3,15 +3,9 @@ import { Express } from 'express'
 import morgan from 'morgan'
 import path from 'path'
 import { createStream } from 'rotating-file-stream'
+import { getLogFolder } from '../utils'
 
-const createLogsFolder = async () => {
-  const { LOG_LOCATION } = process.env
-  const absLogsPath = getAbsolutePath(LOG_LOCATION ?? 'logs', process.cwd())
-  await createFolder(absLogsPath)
-  return absLogsPath
-}
-
-export const configureLogger = async (app: Express) => {
+export const configureLogger = (app: Express) => {
   const { LOG_FORMAT_MORGAN } = process.env
 
   let options
@@ -19,9 +13,9 @@ export const configureLogger = async (app: Express) => {
     process.env.NODE_ENV !== 'development' &&
     process.env.NODE_ENV !== 'test'
   ) {
-    const logsFolder = await createLogsFolder()
     const timestamp = generateTimestamp()
     const filename = `${timestamp}.log`
+    const logsFolder = getLogFolder()
 
     // create a rotating write stream
     var accessLogStream = createStream(filename, {
