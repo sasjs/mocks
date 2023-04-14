@@ -19,6 +19,7 @@ export enum LOG_FORMAT_MORGANType {
 export const verifyEnvVariables = (): ReturnCode => {
   const errors: string[] = []
 
+  errors.push(...verifyExecutablePaths())
   errors.push(...verifyMockServerType())
   errors.push(...verifyPORT())
   errors.push(...verifyLOG_FORMAT_MORGAN())
@@ -31,6 +32,17 @@ export const verifyEnvVariables = (): ReturnCode => {
   }
 
   return ReturnCode.Success
+}
+
+const verifyExecutablePaths = (): string[] => {
+  const errors: string[] = []
+  const { NODE_PATH } = process.env
+
+  if (!NODE_PATH) {
+    errors.push(`- NODE_PATH is required`)
+  }
+
+  return errors
 }
 
 const verifyMockServerType = (): string[] => {
