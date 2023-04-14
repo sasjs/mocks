@@ -5,6 +5,7 @@
     "rootDir": "./",
     "outDir": "./build",
     "esModuleInterop": true,
+    "resolvePackageJsonImports": true,
     "strict": true,
     "resolveJsonModule": true,
     "experimentalDecorators": true,

@@ -3,6 +3,7 @@ import express, { ErrorRequestHandler, Express } from 'express'
 import { configureLogger } from './app-modules'
 import { setupRoutes } from './routes/setupRoutes'
 import { ReturnCode, instantiateLogger, verifyEnvVariables } from './utils'
+import cors from 'cors'
 
 dotenv.config()
 
@@ -17,6 +18,8 @@ const onError: ErrorRequestHandler = (err, req, res, next) => {
 
 const appPromise = new Promise<Express>(async (resolve) => {
   const app = express()
+  app.use(cors({credentials: true, origin: true}))
+  
   await configureLogger(app)
 
   setupRoutes(app)
