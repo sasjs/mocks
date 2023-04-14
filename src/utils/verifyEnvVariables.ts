@@ -39,7 +39,7 @@ const verifyExecutablePaths = (): string[] => {
   const { NODE_PATH } = process.env
 
   if (!NODE_PATH) {
-    errors.push(`- NODE_PATH is required`)
+    process.env.NODE_PATH = 'node'
   }
 
   return errors
@@ -95,6 +95,7 @@ const verifyLOG_FORMAT_MORGAN = (): string[] => {
 }
 
 const DEFAULTS = {
+  NODE_PATH: 'node',
   MOCK_SERVER_TYPE: MOCK_SERVER_TYPEType.SAS9,
   PORT: '5000',
   LOG_FORMAT_MORGAN: LOG_FORMAT_MORGANType.Common
