@@ -1,6 +1,6 @@
 import { Express, Router } from 'express'
 import { MOCK_SERVER_TYPEType } from '../utils'
-import sasViyaRouter from './sasviya-web'
+import sasViyaRouter from './sasviya'
 
 export const setupRoutes = (app: Express) => {
   const router = Router()
