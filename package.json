@@ -8,7 +8,18 @@
     "start:prod": "node ./build/src/server.js",
     "build": "rimraf build && tsc",
     "lint:fix": "npx prettier --write \"src/**/*.{ts,tsx,js,jsx,html,css,sass,less,yml,md,graphql}\"",
-    "lint": "npx prettier --check \"src/**/*.{ts,tsx,js,jsx,html,css,sass,less,yml,md,graphql}\""
+    "lint": "npx prettier --check \"src/**/*.{ts,tsx,js,jsx,html,css,sass,less,yml,md,graphql}\"",
+    "exe": "npm run build && pkg ."
+  },
+  "bin": "./build/src/server.js",
+  "pkg": {
+    "assets": [],
+    "targets": [
+      "node16-linux-x64",
+      "node16-macos-x64",
+      "node16-win-x64"
+    ],
+    "outputPath": "./executables"
   },
   "dependencies": {
     "@sasjs/utils": "3.2.0",
@@ -22,9 +33,14 @@
     "rotating-file-stream": "3.1.0"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "6.0.3",
+    "@semantic-release/exec": "6.0.3",
+    "@semantic-release/git": "10.0.1",
+    "@semantic-release/github": "8.0.7",
     "@types/express": "4.17.17",
     "@types/morgan": "1.9.4",
     "@types/multer": "1.4.7",
-    "nodemon": "2.0.22"
+    "nodemon": "2.0.22",
+    "pkg": "5.8.1"
   }
 }
