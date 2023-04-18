@@ -1,6 +1,7 @@
 import { Express, Router } from 'express'
 import { MOCK_SERVER_TYPEType } from '../utils'
 import sasViyaRouter from './sasviya'
+import sas9Router from './sas9'
 
 export const setupRoutes = (app: Express) => {
   const router = Router()
@@ -10,9 +11,7 @@ export const setupRoutes = (app: Express) => {
   if (MOCK_SERVER_TYPE === MOCK_SERVER_TYPEType.SASVIYA) {
     router.use('/', sasViyaRouter)
   } else {
-    router.use('/', function (req, res, next) {
-      res.send('sas 9 mock router')
-    })
+    router.use('/', sas9Router)
   }
 
   app.use('/', router)
