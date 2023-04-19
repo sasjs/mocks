@@ -19,7 +19,7 @@ export interface MockFileRead {
 
 export class Sas9Controller {
   private loggedInUser: string | undefined
-  private mocksPath = process.env.STATIC_MOCK_LOCATION || 'mocks'
+  private mocksPath = process.env.STATIC_MOCK_LOCATION || '.'
 
   @Get('/SASStoredProcess')
   public async sasStoredProcess(
@@ -54,7 +54,7 @@ export class Sas9Controller {
 
     return await getMockResponseFromFile([
       process.cwd(),
-      'mocks',
+      this.mocksPath,
       'sas9',
       ...filePath
     ])
@@ -109,7 +109,7 @@ export class Sas9Controller {
 
     return await getMockResponseFromFile([
       process.cwd(),
-      'mocks',
+      this.mocksPath,
       'sas9',
       ...filePath
     ])
@@ -145,6 +145,7 @@ export class Sas9Controller {
       : null
     const otherArgs = { filesNamesMap: filesNamesMap }
     const codePath = await getFilePath(program + '.js')
+
     try {
       const result = await new ExecutionController().executeFile({
         programPath: codePath,
@@ -176,7 +177,7 @@ export class Sas9Controller {
       } else {
         return await getMockResponseFromFile([
           process.cwd(),
-          'mocks',
+          this.mocksPath,
           'sas9',
           'generic',
           'logged-in'
@@ -186,7 +187,7 @@ export class Sas9Controller {
 
     return await getMockResponseFromFile([
       process.cwd(),
-      'mocks',
+      this.mocksPath,
       'sas9',
       'generic',
       'login'
@@ -205,7 +206,7 @@ export class Sas9Controller {
 
     return await getMockResponseFromFile([
       process.cwd(),
-      'mocks',
+      this.mocksPath,
       'sas9',
       'generic',
       'logged-in'
@@ -219,7 +220,7 @@ export class Sas9Controller {
     if (req.query.publicDenied === 'true') {
       return await getMockResponseFromFile([
         process.cwd(),
-        'mocks',
+        this.mocksPath,
         'sas9',
         'generic',
         'public-access-denied'
@@ -228,7 +229,7 @@ export class Sas9Controller {
 
     return await getMockResponseFromFile([
       process.cwd(),
-      'mocks',
+      this.mocksPath,
       'sas9',
       'generic',
       'logged-out'
