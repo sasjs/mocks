@@ -10,17 +10,22 @@ import { SasViyaResponse } from "../controllers/sasviya";
  * @returns 
  */
 export const handleReturnOrRedirect = (
-    res: express.Response,
-    response: SasViyaResponse
+  res: express.Response,
+  response: SasViyaResponse
 ) => {
-    if (response.redirect) {
-        res.redirect(response.redirect)
-        return
-    }
-    
-    try {
-        res.send(response.content)
-    } catch (err: any) {
-        res.status(403).send(err.toString())
-    }
+  if (response.redirect) {
+    res.redirect(response.redirect)
+    return
+  }
+
+  if (!response.status) response.status = 200
+
+  try {
+    if (!response.type) response.type = 'json'
+
+    if (response.type === 'json') res.status(response.status).json(response.content)
+    if (response.type === 'text') res.status(response.status).send(response.content)
+  } catch (err: any) {
+    res.status(403).send(err.toString())
+  }
 }

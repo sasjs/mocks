@@ -2105,5 +2105,8 @@
                 "uri": "/files/files/ba4f771d-47af-4a9a-af4f-1ef1af812abc"
             }
         ]
-    }
+    },
+    "/identities/users/@currentUser": {"id":"viyademo08f","type":"user","name":"Viyademo08f","links":[{"method":"GET","rel":"self","href":"/identities/users/viyademo08f","uri":"/identities/users/viyademo08f","type":"user"},{"method":"GET","rel":"alternate","href":"/identities/users/viyademo08f","uri":"/identities/users/viyademo08f","type":"application/vnd.sas.summary"}],"version":2},
+    "/SASLogon/login": {"app":{"version":"75.6.0.SAS.1.0.4"},"links":[{"method":"POST","rel":"token","href":"/SASLogon/oauth/token","uri":"/SASLogon/oauth/token","type":"application/x-www-form-urlencoded","responseType":"application/json","grantTypes":["authorization_code","implicit","password","client_credentials","refresh_token","guest","user_token","urn:ietf:params:oauth:grant-type:saml2-bearer"]}],"zone_name":"uaa","entityID":"cloudfoundry-saml-login","version":1,"idpDefinitions":{},"prompts":{"username":["text","Email"],"password":["password","Password"]},"timestamp":"2023-02-15T14:42:35+0000"},
+    "forbidden": {"errorCode":403,"message":"Forbidden","details":["path: /jobExecution/jobs"],"links":[],"version":2,"httpStatusCode":403}
 }
