@@ -85,6 +85,12 @@ sasViyaRouter.get('/files', async (req, res) => {
   handleReturnOrRedirect(res, response)
 })
 
+sasViyaRouter.post('/files/files', async (req, res) => {
+  const response = await controller.postFile(req)
+
+  handleReturnOrRedirect(res, response)
+})
+
 // This is SERVICE RESPONSE (eg startupservice)
 sasViyaRouter.get('/files/files/:id/content', async (req, res) => {
   const response = await controller.getFileContent(req)

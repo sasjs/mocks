@@ -1,9 +1,11 @@
-import express, { response } from 'express'
+import express from 'express'
 import { Get, Post, Request } from "tsoa"
 import responsesJson from '../../sasviya/responses.json'
 import { loginForm } from '../../sasviya/login-form'
+import { getFilePath } from '../utils'
+import { ExecutionController } from './internal'
 
-export interface SasViyaResponse {
+export interface SasViyaResponse {//EXECUTE SERVICE
   content: any
   type?: 'text' | 'json'
   redirect?: string
@@ -15,6 +17,9 @@ export class SasViyaController {
   private loggedInUser: string | undefined
   private jobsWaitCounter = 1
   private authorizedEndpoints: string[] = []
+
+  // contains service execution results to be returned when requested trough /files/files API
+  public executionResults: string[] = []
 
   @Get('/SASLogon/login')
   public async getLogin(
@@ -189,6 +194,9 @@ export class SasViyaController {
       }
     }
 
+    // In the response we include all jobs
+    // but in real scenario, adapter sends another request to re-populate members again
+    // That bit should be considered in future
     const jsonResponse = responsesJson['/folders/folders/:id/members']
 
     return {
@@ -209,6 +217,17 @@ export class SasViyaController {
     }
   }
 
+  @Post('/files/files')
+  public async postFile(
+    @Request() req: express.Request
+  ): Promise<SasViyaResponse> {
+    const jsonResponse = responsesJson['/files/files']
+
+    return {
+      content: jsonResponse,
+    }
+  }
+
   @Get('/files/files/:id/content')
   public async getFileContent(
     @Request() req: express.Request
@@ -224,8 +243,17 @@ export class SasViyaController {
       }
     }
 
-    // Actual service response
-    const jsonResponse = { "SYSDATE": "26SEP22", "SYSTIME": "08:29", "sasdatasets": [{ "LIBREF": "DC996664", "DSN": "MPE_X_TEST" }, { "LIBREF": "DC996664", "DSN": "MPE_DATADICTIONARY" }, { "LIBREF": "DC996664", "DSN": "MPE_USERS" }, { "LIBREF": "DC996664", "DSN": "MPE_TABLES" }], "saslibs": [{ "LIBREF": "DC996664" }], "globvars": [{ "DCLIB": "DC996664", "SAS9LINEAGE_ENABLED": 1, "ISREGISTERED": 1, "REGISTERCOUNT": 1, "DC_ADMIN_GROUP": "Data Management Business Approvers", "LICENCE_KEY": "", "ACTIVATION_KEY": "", "DC_RESTRICT_EDITRECORD": "NO" }], "_DEBUG": "", "_METAUSER": "sasdemo@SAS", "_METAPERSON": "sasdemo", "_PROGRAM": "/Projects/app/dc/services/public/startupservice", "AUTOEXEC": "D%3A%5Copt%5Csasinside%5CConfig%5CLev1%5CSASApp%5CStoredProcessServer%5Cautoexec.sas", "MF_GETUSER": "sasdemo", "SYSCC": "0", "SYSENCODING": "wlatin1", "SYSERRORTEXT": "", "SYSHOSTNAME": "SAS", "SYSPROCESSID": "41DD8056944A8F5C409C500000000000", "SYSPROCESSMODE": "SAS Stored Process Server", "SYSPROCESSNAME": "", "SYSJOBID": "27448", "SYSSCPL": "Linunx", "SYSSITE": "123", "SYSUSERID": "sassrv", "SYSVLONG": "9.04.01M7P080520", "SYSWARNINGTEXT": "ENCODING option ignored for files opened with RECFM=N.", "END_DTTM": "2022-09-26T08:29:06.092000", "MEMSIZE": "46GB" }
+    const executedServiceResponse = this.executionResults.shift() || 'No webout returned'
+    let jsonResponse = {}
+
+    try {
+      jsonResponse = JSON.parse(executedServiceResponse)
+    } catch(err) {
+      return {
+        content: err,
+        error: true
+      }
+    }
 
     return {
       content: jsonResponse
@@ -271,6 +299,34 @@ export class SasViyaController {
   public async submitJob(
     @Request() req: express.Request
   ): Promise<SasViyaResponse> {
+    const body = req.body
+    const program = body.arguments._program
+
+    console.log('program', program)
+
+    const vars = { ...body.arguments }
+    const otherArgs = {}
+
+    try {
+      const codePath = await getFilePath(program + '.js')
+
+      // todo: set session from req.sasjsSession
+      const result = await new ExecutionController().executeFile({
+        programPath: codePath,
+        vars: vars,
+        otherArgs: otherArgs,
+        session: req.sasjsSession,
+        forceStringResult: true
+      })
+
+      const resultString = result.result as string
+      this.executionResults.push(resultString)
+
+      process.logger.info(`Execution of (${program}) successfull`)
+    } catch (err) {
+      process.logger.error('err', err)
+    }
+
     const jsonResponse = responsesJson['/jobExecution/jobs']
 
     return {
