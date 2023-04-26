@@ -1,1 +1,1 @@
-export * from './configureLogger'
+export * from "./configureLogger";

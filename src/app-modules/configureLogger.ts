@@ -1,33 +1,33 @@
-import { createFolder, generateTimestamp, getAbsolutePath } from '@sasjs/utils'
-import { Express } from 'express'
-import morgan from 'morgan'
-import path from 'path'
-import { createStream } from 'rotating-file-stream'
-import { getLogFolder } from '../utils'
+import { createFolder, generateTimestamp, getAbsolutePath } from "@sasjs/utils";
+import { Express } from "express";
+import morgan from "morgan";
+import path from "path";
+import { createStream } from "rotating-file-stream";
+import { getLogFolder } from "../utils";
 
 export const configureLogger = (app: Express) => {
-  const { LOG_FORMAT_MORGAN } = process.env
+  const { LOG_FORMAT_MORGAN } = process.env;
 
-  let options
+  let options;
   if (
-    process.env.NODE_ENV !== 'development' &&
-    process.env.NODE_ENV !== 'test'
+    process.env.NODE_ENV !== "development" &&
+    process.env.NODE_ENV !== "test"
   ) {
-    const timestamp = generateTimestamp()
-    const filename = `${timestamp}.log`
-    const logsFolder = getLogFolder()
+    const timestamp = generateTimestamp();
+    const filename = `${timestamp}.log`;
+    const logsFolder = getLogFolder();
 
     // create a rotating write stream
     var accessLogStream = createStream(filename, {
-      interval: '1d', // rotate daily
-      path: logsFolder
-    })
+      interval: "1d", // rotate daily
+      path: logsFolder,
+    });
 
-    process.logger.info('Writing Logs to :', path.join(logsFolder, filename))
+    process.logger.info("Writing Logs to :", path.join(logsFolder, filename));
 
-    options = { stream: accessLogStream }
+    options = { stream: accessLogStream };
   }
 
   // setup the logger
-  app.use(morgan(LOG_FORMAT_MORGAN as string, options))
-}
+  app.use(morgan(LOG_FORMAT_MORGAN as string, options));
+};

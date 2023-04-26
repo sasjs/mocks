@@ -1,10 +1,10 @@
-import path from 'path'
-import { WriteStream, createWriteStream } from 'fs'
-import { execFile } from 'child_process'
-import { once } from 'stream'
-import { createFile } from '@sasjs/utils'
-import { Session } from '../../types'
-import { ExecutionVars, createJSProgram } from './'
+import path from "path";
+import { WriteStream, createWriteStream } from "fs";
+import { execFile } from "child_process";
+import { once } from "stream";
+import { createFile } from "@sasjs/utils";
+import { Session } from "../../types";
+import { ExecutionVars, createJSProgram } from "./";
 
 export const processProgram = async (
   program: string,
@@ -22,29 +22,29 @@ export const processProgram = async (
     weboutPath,
     headersPath,
     otherArgs
-  )
-  const codePath = path.join(session.path, 'code.js')
-  const executablePath = process.nodeLoc!
+  );
+  const codePath = path.join(session.path, "code.js");
+  const executablePath = process.nodeLoc!;
 
-  await createFile(codePath, program)
+  await createFile(codePath, program);
 
   // create a stream that will write to console outputs to log file
-  const writeStream = createWriteStream(logPath)
+  const writeStream = createWriteStream(logPath);
   // waiting for the open event so that we can have underlying file descriptor
-  await once(writeStream, 'open')
+  await once(writeStream, "open");
 
   await execFilePromise(executablePath, [codePath], writeStream)
     .then(() => {
-      process.logger.info('session completed', session)
+      process.logger.info("session completed", session);
     })
     .catch((err) => {
-      session.crashed = err.toString()
-      process.logger.error('session crashed', session.id, session.crashed)
-    })
+      session.crashed = err.toString();
+      process.logger.error("session crashed", session.id, session.crashed);
+    });
 
   // copy the code file to log and end write stream
-  writeStream.end(program)
-}
+  writeStream.end(program);
+};
 
 /**
  * Promisified child_process.execFile
@@ -62,17 +62,17 @@ const execFilePromise = (
 ): Promise<{ stdout: string; stderr: string }> => {
   return new Promise((resolve, reject) => {
     const child = execFile(file, args, (err, stdout, stderr) => {
-      if (err) reject(err)
+      if (err) reject(err);
 
-      resolve({ stdout, stderr })
-    })
+      resolve({ stdout, stderr });
+    });
 
-    child.stdout?.on('data', (data) => {
-      writeStream.write(data)
-    })
+    child.stdout?.on("data", (data) => {
+      writeStream.write(data);
+    });
 
-    child.stderr?.on('data', (data) => {
-      writeStream.write(data)
-    })
-  })
-}
+    child.stderr?.on("data", (data) => {
+      writeStream.write(data);
+    });
+  });
+};

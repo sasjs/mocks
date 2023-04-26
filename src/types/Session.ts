@@ -1,5 +1,5 @@
 export interface Session {
-  id: string
-  path: string
-  crashed?: string
+  id: string;
+  path: string;
+  crashed?: string;
 }
