@@ -1,5 +1,5 @@
 import express from "express";
-import { Get, Post, Request } from "tsoa";
+import { Delete, Get, Post, Request } from "tsoa";
 import responsesJson from "../../sasviya/responses.json";
 import { loginForm } from "../../sasviya/login-form";
 import { getFilePath } from "../utils";
@@ -100,6 +100,186 @@ export class SasViyaController {
     };
   }
 
+  @Post("/SASJobExecution")
+  public async executeJob(
+    @Request() req: express.Request
+  ): Promise<SasViyaResponse> {
+    const body = req.body;
+    const program = req.query._program;
+
+    console.log("program", program);
+
+    const vars = { ...body.arguments };
+    const otherArgs = {};
+
+    let jsonResponse = {};
+
+    try {
+      const codePath = await getFilePath(program + ".js");
+
+      // todo: set session from req.sasjsSession
+      const result = await new ExecutionController().executeFile({
+        programPath: codePath,
+        vars: vars,
+        otherArgs: otherArgs,
+        session: req.sasjsSession,
+        forceStringResult: true,
+      });
+
+      jsonResponse = result.result;
+
+      process.logger.info(`Execution of (${program}) successfull`);
+    } catch (err) {
+      process.logger.error("err", err);
+    }
+
+    return {
+      content: jsonResponse,
+    };
+  }
+
+  @Get("/compute/contexts")
+  public async getContexts(
+    @Request() req: express.Request
+  ): Promise<SasViyaResponse> {
+    const jsonResponse = responsesJson["/compute/contexts"];
+
+    return {
+      content: jsonResponse,
+    };
+  }
+
+  @Post("/compute/contexts/:id/sessions")
+  public async createNewSession(
+    @Request() req: express.Request
+  ): Promise<SasViyaResponse> {
+    const jsonResponse = responsesJson["/compute/contexts/:id/sessions"];
+
+    return {
+      content: jsonResponse,
+    };
+  }
+
+  @Post("/compute/sessions/:id/jobs")
+  public async createSessionJob(
+    @Request() req: express.Request
+  ): Promise<SasViyaResponse> {
+    const body = req.body;
+    const program = req.body.variables._program;
+
+    console.log("program", program);
+
+    const vars = { ...body.arguments };
+    const otherArgs = {};
+
+    try {
+      const codePath = await getFilePath(program + ".js");
+
+      // todo: set session from req.sasjsSession
+      const result = await new ExecutionController().executeFile({
+        programPath: codePath,
+        vars: vars,
+        otherArgs: otherArgs,
+        session: req.sasjsSession,
+        forceStringResult: true,
+      });
+
+      const resultString = result.result as string;
+      this.executionResults.push(resultString);
+
+      process.logger.info(`Execution of (${program}) successfull`);
+    } catch (err) {
+      process.logger.error("err", err);
+    }
+
+    const jsonResponse = responsesJson["/compute/sessions/:id/jobs"];
+
+    return {
+      content: jsonResponse,
+    };
+  }
+
+  @Get("/compute/sessions/:id/jobs/:id")
+  public async getSessionJob(
+    @Request() req: express.Request
+  ): Promise<SasViyaResponse> {
+    const jsonResponse = responsesJson["/compute/sessions/:id/jobs/:id"];
+
+    return {
+      content: jsonResponse,
+    };
+  }
+
+  @Get("/compute/sessions/:id/jobs/:id/state")
+  public async getSessionJobState(
+    @Request() req: express.Request
+  ): Promise<SasViyaResponse> {
+    if (this.jobsWaitCounter > 10) {
+      this.jobsWaitCounter = 1;
+
+      return {
+        content: "completed",
+      };
+    } else {
+      this.jobsWaitCounter++;
+
+      return {
+        content: "running",
+      };
+    }
+  }
+
+  @Get("/compute/sessions/:id/state")
+  public async getSessionState(
+    @Request() req: express.Request
+  ): Promise<SasViyaResponse> {
+    if (this.jobsWaitCounter > 10) {
+      this.jobsWaitCounter = 1;
+
+      return {
+        content: "completed",
+      };
+    } else {
+      this.jobsWaitCounter++;
+
+      return {
+        content: "running",
+      };
+    }
+  }
+
+  @Get("/compute/sessions/:id/filerefs/_webout/content")
+  public async getSessionContent(
+    @Request() req: express.Request
+  ): Promise<SasViyaResponse> {
+    const executedServiceResponse =
+      this.executionResults.shift() || "No webout returned";
+    let jsonResponse = {};
+
+    try {
+      jsonResponse = JSON.parse(executedServiceResponse);
+    } catch (err) {
+      return {
+        content: err,
+        error: true,
+      };
+    }
+
+    return {
+      content: jsonResponse,
+    };
+  }
+
+  @Delete("/compute/sessions/:id")
+  public async deleteSession(
+    @Request() req: express.Request
+  ): Promise<SasViyaResponse> {
+    return {
+      content: "",
+      status: 204,
+    };
+  }
+
   @Get("/identities")
   public async getIdentities(
     @Request() req: express.Request
@@ -133,15 +313,6 @@ export class SasViyaController {
 
     return {
       content: jsonResponse,
-    };
-  }
-
-  @Post("/SASJobExecution")
-  public async postSasJobExecution(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
-    return {
-      content: "test",
     };
   }
 

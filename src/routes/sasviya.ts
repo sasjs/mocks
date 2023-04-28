@@ -44,6 +44,57 @@ sasViyaRouter.get("/SASDrive", async (req, res) => {
   handleReturnOrRedirect(res, response);
 });
 
+sasViyaRouter.get("/compute/contexts", async (req, res) => {
+  const response = await controller.getContexts(req);
+
+  handleReturnOrRedirect(res, response);
+});
+
+sasViyaRouter.post("/compute/contexts/:id/sessions", async (req, res) => {
+  const response = await controller.createNewSession(req);
+
+  handleReturnOrRedirect(res, response);
+});
+
+sasViyaRouter.post("/compute/sessions/:id/jobs", async (req, res) => {
+  const response = await controller.createSessionJob(req);
+
+  handleReturnOrRedirect(res, response);
+});
+
+sasViyaRouter.get("/compute/sessions/:id/jobs/:id", async (req, res) => {
+  const response = await controller.getSessionJob(req);
+
+  handleReturnOrRedirect(res, response);
+});
+
+sasViyaRouter.get("/compute/sessions/:id/jobs/:id/state", async (req, res) => {
+  const response = await controller.getSessionJobState(req);
+
+  handleReturnOrRedirect(res, response);
+});
+
+sasViyaRouter.get("/compute/sessions/:id/state", async (req, res) => {
+  const response = await controller.getSessionState(req);
+
+  handleReturnOrRedirect(res, response);
+});
+
+sasViyaRouter.get(
+  "/compute/sessions/:id/filerefs/_webout/content",
+  async (req, res) => {
+    const response = await controller.getSessionContent(req);
+
+    handleReturnOrRedirect(res, response);
+  }
+);
+
+sasViyaRouter.delete("/compute/sessions/:id", async (req, res) => {
+  const response = await controller.deleteSession(req);
+
+  handleReturnOrRedirect(res, response);
+});
+
 sasViyaRouter.get("/identities", async (req, res) => {
   const response = await controller.getIdentities(req);
 
@@ -57,7 +108,7 @@ sasViyaRouter.get("/identities/users/@currentUser", async (req, res) => {
 });
 
 sasViyaRouter.post("/SASJobExecution", async (req, res) => {
-  const response = await controller.postSasJobExecution(req);
+  const response = await controller.executeJob(req);
 
   handleReturnOrRedirect(res, response);
 });
