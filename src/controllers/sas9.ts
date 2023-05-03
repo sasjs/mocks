@@ -1,7 +1,6 @@
 import { readFile } from '@sasjs/utils'
 import express from 'express'
 import path from 'path'
-import { Get, Post, Request } from 'tsoa'
 import { MulterFile } from '../types/Upload'
 import { getFilePath, makeFilesNamesMap } from '../utils'
 import { ExecutionController } from './internal'
@@ -21,10 +20,7 @@ export class Sas9Controller {
   private loggedInUser: string | undefined
   private mocksPath = process.env.STATIC_MOCK_LOCATION || '.'
 
-  @Get('/SASStoredProcess')
-  public async sasStoredProcess(
-    @Request() req: express.Request
-  ): Promise<Sas9Response> {
+  public async sasStoredProcess(req: express.Request): Promise<Sas9Response> {
     const username = req.query._username?.toString() || undefined
     const password = req.query._password?.toString() || undefined
 
@@ -60,9 +56,8 @@ export class Sas9Controller {
     ])
   }
 
-  @Get('/SASStoredProcess/do')
   public async sasStoredProcessDoGet(
-    @Request() req: express.Request
+    req: express.Request
   ): Promise<Sas9Response> {
     const username = req.query._username?.toString() || undefined
     const password = req.query._password?.toString() || undefined
@@ -115,9 +110,8 @@ export class Sas9Controller {
     ])
   }
 
-  @Post('/SASStoredProcess/do/')
   public async sasStoredProcessDoPost(
-    @Request() req: express.Request
+    req: express.Request
   ): Promise<Sas9Response> {
     if (!this.loggedInUser) {
       return {
@@ -166,7 +160,6 @@ export class Sas9Controller {
     }
   }
 
-  @Get('/SASLogon/login')
   public async loginGet(): Promise<Sas9Response> {
     if (this.loggedInUser) {
       if (this.isPublicAccount()) {
@@ -194,7 +187,6 @@ export class Sas9Controller {
     ])
   }
 
-  @Post('/SASLogon/login')
   public async loginPost(req: express.Request): Promise<Sas9Response> {
     if (req.body.lt && req.body.lt !== 'validtoken')
       return {
@@ -213,7 +205,6 @@ export class Sas9Controller {
     ])
   }
 
-  @Get('/SASLogon/logout')
   public async logout(req: express.Request): Promise<Sas9Response> {
     this.loggedInUser = undefined
 
@@ -236,7 +227,7 @@ export class Sas9Controller {
     ])
   }
 
-  @Get('/SASStoredProcess/Logoff') //publicDenied=true
+  //publicDenied=true
   public async logoff(req: express.Request): Promise<Sas9Response> {
     const params = req.query.publicDenied
       ? `?publicDenied=${req.query.publicDenied}`
