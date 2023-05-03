@@ -2,7 +2,8 @@ import path from 'path'
 import { createFolder, getAbsolutePath, getRealPath } from '@sasjs/utils'
 
 export const setProcessVariables = async () => {
-  const { SASJS_ROOT, DRIVE_LOCATION, LOG_LOCATION } = process.env
+  const { SASJS_ROOT, DRIVE_LOCATION, LOG_LOCATION, SERVICES_LOCATION } =
+    process.env
 
   if (process.env.NODE_ENV === 'test') {
     process.sasjsRoot = path.join(process.cwd(), 'sasjs_root')
@@ -11,6 +12,8 @@ export const setProcessVariables = async () => {
   }
 
   process.nodeLoc = process.env.NODE_PATH!
+
+  process.servicesLoc = path.join(SERVICES_LOCATION!)
 
   const absPath = getAbsolutePath(SASJS_ROOT ?? 'sasjs_root', process.cwd())
   await createFolder(absPath)

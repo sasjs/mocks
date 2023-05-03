@@ -1,7 +1,6 @@
 import { readFile } from '@sasjs/utils'
 import express from 'express'
 import path from 'path'
-import { Get, Post, Request } from 'tsoa'
 import { MulterFile } from '../types/Upload'
 import { getFilePath, makeFilesNamesMap } from '../utils'
 import { ExecutionController } from './internal'
@@ -19,12 +18,9 @@ export interface MockFileRead {
 
 export class Sas9Controller {
   private loggedInUser: string | undefined
-  private mocksPath = process.env.STATIC_MOCK_LOCATION || 'mocks'
+  private mocksPath = process.env.STATIC_MOCK_LOCATION || '.'
 
-  @Get('/SASStoredProcess')
-  public async sasStoredProcess(
-    @Request() req: express.Request
-  ): Promise<Sas9Response> {
+  public async sasStoredProcess(req: express.Request): Promise<Sas9Response> {
     const username = req.query._username?.toString() || undefined
     const password = req.query._password?.toString() || undefined
 
@@ -54,15 +50,14 @@ export class Sas9Controller {
 
     return await getMockResponseFromFile([
       process.cwd(),
-      'mocks',
+      this.mocksPath,
       'sas9',
       ...filePath
     ])
   }
 
-  @Get('/SASStoredProcess/do')
   public async sasStoredProcessDoGet(
-    @Request() req: express.Request
+    req: express.Request
   ): Promise<Sas9Response> {
     const username = req.query._username?.toString() || undefined
     const password = req.query._password?.toString() || undefined
@@ -109,15 +104,14 @@ export class Sas9Controller {
 
     return await getMockResponseFromFile([
       process.cwd(),
-      'mocks',
+      this.mocksPath,
       'sas9',
       ...filePath
     ])
   }
 
-  @Post('/SASStoredProcess/do/')
   public async sasStoredProcessDoPost(
-    @Request() req: express.Request
+    req: express.Request
   ): Promise<Sas9Response> {
     if (!this.loggedInUser) {
       return {
@@ -145,6 +139,7 @@ export class Sas9Controller {
       : null
     const otherArgs = { filesNamesMap: filesNamesMap }
     const codePath = await getFilePath(program + '.js')
+
     try {
       const result = await new ExecutionController().executeFile({
         programPath: codePath,
@@ -165,7 +160,6 @@ export class Sas9Controller {
     }
   }
 
-  @Get('/SASLogon/login')
   public async loginGet(): Promise<Sas9Response> {
     if (this.loggedInUser) {
       if (this.isPublicAccount()) {
@@ -176,7 +170,7 @@ export class Sas9Controller {
       } else {
         return await getMockResponseFromFile([
           process.cwd(),
-          'mocks',
+          this.mocksPath,
           'sas9',
           'generic',
           'logged-in'
@@ -186,14 +180,13 @@ export class Sas9Controller {
 
     return await getMockResponseFromFile([
       process.cwd(),
-      'mocks',
+      this.mocksPath,
       'sas9',
       'generic',
       'login'
     ])
   }
 
-  @Post('/SASLogon/login')
   public async loginPost(req: express.Request): Promise<Sas9Response> {
     if (req.body.lt && req.body.lt !== 'validtoken')
       return {
@@ -205,21 +198,20 @@ export class Sas9Controller {
 
     return await getMockResponseFromFile([
       process.cwd(),
-      'mocks',
+      this.mocksPath,
       'sas9',
       'generic',
       'logged-in'
     ])
   }
 
-  @Get('/SASLogon/logout')
   public async logout(req: express.Request): Promise<Sas9Response> {
     this.loggedInUser = undefined
 
     if (req.query.publicDenied === 'true') {
       return await getMockResponseFromFile([
         process.cwd(),
-        'mocks',
+        this.mocksPath,
         'sas9',
         'generic',
         'public-access-denied'
@@ -228,14 +220,14 @@ export class Sas9Controller {
 
     return await getMockResponseFromFile([
       process.cwd(),
-      'mocks',
+      this.mocksPath,
       'sas9',
       'generic',
       'logged-out'
     ])
   }
 
-  @Get('/SASStoredProcess/Logoff') //publicDenied=true
+  //publicDenied=true
   public async logoff(req: express.Request): Promise<Sas9Response> {
     const params = req.query.publicDenied
       ? `?publicDenied=${req.query.publicDenied}`

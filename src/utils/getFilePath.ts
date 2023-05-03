@@ -1,10 +1,10 @@
 import path from 'path'
 import { fileExists } from '@sasjs/utils'
-import { getFilesFolder } from './file'
+import { getServicesFolder } from './file'
 
 export const getFilePath = async (programPath: string) => {
   const filePath = path
-    .join(getFilesFolder(), programPath)
+    .join(getServicesFolder(), programPath)
     .replace(new RegExp('/', 'g'), path.sep)
 
   if (await fileExists(filePath)) {

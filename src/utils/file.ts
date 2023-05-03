@@ -7,6 +7,8 @@ export const getSasjsDriveFolder = () => process.driveLoc
 
 export const getLogFolder = () => process.logsLoc
 
+export const getServicesFolder = () => process.servicesLoc
+
 export const getUploadsFolder = () => path.join(getSasjsRootFolder(), 'uploads')
 
 export const getFilesFolder = () => path.join(getSasjsDriveFolder(), 'files')

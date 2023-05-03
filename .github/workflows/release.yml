@@ -1,0 +1,45 @@
+name: SASjs Mocks Executable Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [lts/*]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Executables
+        run: npm run exe
+        env:
+          CI: true
+
+      - name: Compress Executables
+        working-directory: ./executables
+        run: |
+          zip linux.zip mocks-linux
+          zip macos.zip mocks-macos
+          zip windows.zip mocks-win.exe
+
+      - name: Install Semantic Release and plugins
+        run: npm i -g semantic-release
+
+      - name: Release
+        run: |
+          GITHUB_TOKEN=${{ secrets.GH_TOKEN }} semantic-release

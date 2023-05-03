@@ -20,6 +20,12 @@ SASJS_ROOT=./sasjs_root
 # This location is for files
 DRIVE_LOCATION=./sasjs_root/drive
 
+# Location for mock services (JS)
+SERVICES_LOCATION=./sas/mocks
+
+# Path to Node.js executable
+NODE_PATH=~/.nvm/versions/node/v16.14.0/bin/node
+
 # LOG_FORMAT_MORGAN options: [combined|common|dev|short|tiny] default: `common`
 # Docs: https://www.npmjs.com/package/morgan#predefined-formats
 LOG_FORMAT_MORGAN=
