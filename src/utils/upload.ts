@@ -1,14 +1,14 @@
-import path from "path";
-import { MulterFile } from "../types/Upload";
-import { listFilesInFolder, isWindows } from "@sasjs/utils";
+import path from 'path'
+import { MulterFile } from '../types/Upload'
+import { listFilesInFolder, isWindows } from '@sasjs/utils'
 
 interface FilenameMapSingle {
-  fieldName: string;
-  originalName: string;
+  fieldName: string
+  originalName: string
 }
 
 interface FilenamesMap {
-  [key: string]: FilenameMapSingle;
+  [key: string]: FilenameMapSingle
 }
 
 /**
@@ -17,19 +17,19 @@ interface FilenamesMap {
  * @returns object
  */
 export const makeFilesNamesMap = (files: MulterFile[]) => {
-  if (!files) return null;
+  if (!files) return null
 
-  const filesNamesMap: FilenamesMap = {};
+  const filesNamesMap: FilenamesMap = {}
 
   for (let file of files) {
     filesNamesMap[file.filename] = {
       fieldName: file.fieldname,
-      originalName: file.originalname,
-    };
+      originalName: file.originalname
+    }
   }
 
-  return filesNamesMap;
-};
+  return filesNamesMap
+}
 
 /**
  * Generates the js code that references uploaded files in the concurrent request
@@ -41,23 +41,23 @@ export const generateFileUploadJSCode = async (
   filesNamesMap: FilenamesMap,
   sessionFolder: string
 ) => {
-  let uploadCode = "";
-  let fileCount = 0;
+  let uploadCode = ''
+  let fileCount = 0
 
-  const sessionFolderList: string[] = await listFilesInFolder(sessionFolder);
+  const sessionFolderList: string[] = await listFilesInFolder(sessionFolder)
   sessionFolderList.forEach(async (fileName) => {
-    if (fileName.includes("req_file")) {
-      fileCount++;
-      const filePath = path.join(sessionFolder, fileName);
+    if (fileName.includes('req_file')) {
+      fileCount++
+      const filePath = path.join(sessionFolder, fileName)
       uploadCode += `\nconst _WEBIN_FILEREF${fileCount} = fs.readFileSync('${
-        isWindows() ? filePath.replace(/\\/g, "\\\\") : filePath
-      }')`;
-      uploadCode += `\nconst _WEBIN_FILENAME${fileCount} = '${filesNamesMap[fileName].originalName}'`;
-      uploadCode += `\nconst _WEBIN_NAME${fileCount} = '${filesNamesMap[fileName].fieldName}'`;
+        isWindows() ? filePath.replace(/\\/g, '\\\\') : filePath
+      }')`
+      uploadCode += `\nconst _WEBIN_FILENAME${fileCount} = '${filesNamesMap[fileName].originalName}'`
+      uploadCode += `\nconst _WEBIN_NAME${fileCount} = '${filesNamesMap[fileName].fieldName}'`
     }
-  });
+  })
 
-  uploadCode += `\nconst _WEBIN_FILE_COUNT = ${fileCount}`;
+  uploadCode += `\nconst _WEBIN_FILE_COUNT = ${fileCount}`
 
-  return uploadCode;
-};
+  return uploadCode
+}

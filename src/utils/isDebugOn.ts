@@ -1,8 +1,8 @@
-import { ExecutionVars } from "../controllers/internal";
+import { ExecutionVars } from '../controllers/internal'
 
 export const isDebugOn = (vars: ExecutionVars) => {
   const debugValue =
-    typeof vars._debug === "string" ? parseInt(vars._debug) : vars._debug;
+    typeof vars._debug === 'string' ? parseInt(vars._debug) : vars._debug
 
-  return !!(debugValue && debugValue >= 131);
-};
+  return !!(debugValue && debugValue >= 131)
+}

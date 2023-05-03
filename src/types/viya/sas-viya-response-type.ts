@@ -1,4 +1,4 @@
 export enum SasViyaResponseType {
-  text = "text",
-  json = "json",
+  text = 'text',
+  json = 'json'
 }
