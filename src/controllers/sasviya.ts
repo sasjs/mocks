@@ -1,18 +1,10 @@
 import express from "express";
-import { Delete, Get, Post, Request } from "tsoa";
 import responsesJson from "../../sasviya/responses.json";
 import { loginForm } from "../../sasviya/login-form";
 import { getFilePath } from "../utils";
 import { ExecutionController } from "./internal";
-
-export interface SasViyaResponse {
-  //EXECUTE SERVICE
-  content: any;
-  type?: "text" | "json";
-  redirect?: string;
-  status?: number;
-  error?: boolean;
-}
+import { SasViyaResponse } from "../types/viya/sas-viya-response";
+import { SasViyaResponseType } from "../types/viya/sas-viya-response-type";
 
 export class SasViyaController {
   private loggedInUser: string | undefined;
@@ -22,10 +14,8 @@ export class SasViyaController {
   // contains service execution results to be returned when requested trough /files/files API
   public executionResults: string[] = [];
 
-  @Get("/SASLogon/login")
-  public async getLogin(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Get("/SASLogon/login")
+  public async getLogin(req: express.Request): Promise<SasViyaResponse> {
     const acceptJson = req.headers.accept === "application/json";
 
     const jsonResponse = responsesJson["/SASLogon/login"];
@@ -39,14 +29,12 @@ export class SasViyaController {
 
     return {
       content: formResponse,
-      type: "text",
+      type: SasViyaResponseType.text,
     };
   }
 
-  @Post("/SASLogon/login.do")
-  public async login(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Post("/SASLogon/login.do")
+  public async login(req: express.Request): Promise<SasViyaResponse> {
     this.loggedInUser = req.body.username;
 
     return {
@@ -55,19 +43,15 @@ export class SasViyaController {
     };
   }
 
-  @Get("/SASLogon/logout.do")
-  public async logout(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Get("/SASLogon/logout.do")
+  public async logout(req: express.Request): Promise<SasViyaResponse> {
     return {
       content: "/SASLogon/login",
     };
   }
 
-  @Get("/SASLogon/oauth/authorize")
-  public async oauthAuthorize(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Get("/SASLogon/oauth/authorize")
+  public async oauthAuthorize(req: express.Request): Promise<SasViyaResponse> {
     const redirect_uri = req.query.redirect_uri;
     const code = req.query.code;
     const state = req.query.state;
@@ -82,10 +66,8 @@ export class SasViyaController {
     };
   }
 
-  @Get("/SASDrive")
-  public async getSasDrive(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Get("/SASDrive")
+  public async getSasDrive(req: express.Request): Promise<SasViyaResponse> {
     const code = req.query.code;
 
     if (code) {
@@ -100,10 +82,8 @@ export class SasViyaController {
     };
   }
 
-  @Post("/SASJobExecution")
-  public async executeJob(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Post("/SASJobExecution")
+  public async executeJob(req: express.Request): Promise<SasViyaResponse> {
     const body = req.body;
     const program = req.query._program;
 
@@ -138,10 +118,8 @@ export class SasViyaController {
     };
   }
 
-  @Get("/compute/contexts")
-  public async getContexts(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Get("/compute/contexts")
+  public async getContexts(req: express.Request): Promise<SasViyaResponse> {
     const jsonResponse = responsesJson["/compute/contexts"];
 
     return {
@@ -149,9 +127,9 @@ export class SasViyaController {
     };
   }
 
-  @Post("/compute/contexts/:id/sessions")
+  // @Post("/compute/contexts/:id/sessions")
   public async createNewSession(
-    @Request() req: express.Request
+    req: express.Request
   ): Promise<SasViyaResponse> {
     const jsonResponse = responsesJson["/compute/contexts/:id/sessions"];
 
@@ -160,9 +138,9 @@ export class SasViyaController {
     };
   }
 
-  @Post("/compute/sessions/:id/jobs")
+  // @Post("/compute/sessions/:id/jobs")
   public async createSessionJob(
-    @Request() req: express.Request
+    req: express.Request
   ): Promise<SasViyaResponse> {
     const body = req.body;
     const program = req.body.variables._program;
@@ -199,10 +177,8 @@ export class SasViyaController {
     };
   }
 
-  @Get("/compute/sessions/:id/jobs/:id")
-  public async getSessionJob(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Get("/compute/sessions/:id/jobs/:id")
+  public async getSessionJob(req: express.Request): Promise<SasViyaResponse> {
     const jsonResponse = responsesJson["/compute/sessions/:id/jobs/:id"];
 
     return {
@@ -210,9 +186,9 @@ export class SasViyaController {
     };
   }
 
-  @Get("/compute/sessions/:id/jobs/:id/state")
+  // @Get("/compute/sessions/:id/jobs/:id/state")
   public async getSessionJobState(
-    @Request() req: express.Request
+    req: express.Request
   ): Promise<SasViyaResponse> {
     if (this.jobsWaitCounter > 10) {
       this.jobsWaitCounter = 1;
@@ -229,10 +205,8 @@ export class SasViyaController {
     }
   }
 
-  @Get("/compute/sessions/:id/state")
-  public async getSessionState(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Get("/compute/sessions/:id/state")
+  public async getSessionState(req: express.Request): Promise<SasViyaResponse> {
     if (this.jobsWaitCounter > 10) {
       this.jobsWaitCounter = 1;
 
@@ -248,9 +222,9 @@ export class SasViyaController {
     }
   }
 
-  @Get("/compute/sessions/:id/filerefs/_webout/content")
+  // @Get("/compute/sessions/:id/filerefs/_webout/content")
   public async getSessionContent(
-    @Request() req: express.Request
+    req: express.Request
   ): Promise<SasViyaResponse> {
     const executedServiceResponse =
       this.executionResults.shift() || "No webout returned";
@@ -270,20 +244,16 @@ export class SasViyaController {
     };
   }
 
-  @Delete("/compute/sessions/:id")
-  public async deleteSession(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Delete("/compute/sessions/:id")
+  public async deleteSession(req: express.Request): Promise<SasViyaResponse> {
     return {
       content: "",
       status: 204,
     };
   }
 
-  @Get("/identities")
-  public async getIdentities(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Get("/identities")
+  public async getIdentities(req: express.Request): Promise<SasViyaResponse> {
     const redirectToSub = req.query.state;
     const redirect = `${redirectToSub}?state=auth`;
 
@@ -293,10 +263,8 @@ export class SasViyaController {
     };
   }
 
-  @Get("/identities/users/@currentUser")
-  public async getCrrentUser(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Get("/identities/users/@currentUser")
+  public async getCrrentUser(req: express.Request): Promise<SasViyaResponse> {
     const state = req.query.state;
     const urlWithoutQuery = req.originalUrl.split("?")[0];
 
@@ -316,10 +284,8 @@ export class SasViyaController {
     };
   }
 
-  @Get("/folders")
-  public async getFolders(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Get("/folders")
+  public async getFolders(req: express.Request): Promise<SasViyaResponse> {
     const redirectToSub = req.query.state;
     const redirect = `${redirectToSub}?state=auth`;
 
@@ -329,9 +295,9 @@ export class SasViyaController {
     };
   }
 
-  @Get("/folders/folders/@item")
+  // @Get("/folders/folders/@item")
   public async getFoldersByItem(
-    @Request() req: express.Request
+    req: express.Request
   ): Promise<SasViyaResponse> {
     const state = req.query.state;
     const urlWithoutQuery = req.originalUrl.split("?")[0];
@@ -351,9 +317,9 @@ export class SasViyaController {
     };
   }
 
-  @Get("/folders/folders/:id/members")
+  // @Get("/folders/folders/:id/members")
   public async getFolderMembers(
-    @Request() req: express.Request
+    req: express.Request
   ): Promise<SasViyaResponse> {
     const state = req.query.state;
     const urlWithoutQuery = req.originalUrl.split("?")[0];
@@ -376,10 +342,8 @@ export class SasViyaController {
     };
   }
 
-  @Get("/files")
-  public async getFiles(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Get("/files")
+  public async getFiles(req: express.Request): Promise<SasViyaResponse> {
     const redirectToSub = req.query.state;
     const redirect = `${redirectToSub}?state=auth`;
 
@@ -389,10 +353,8 @@ export class SasViyaController {
     };
   }
 
-  @Post("/files/files")
-  public async postFile(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Post("/files/files")
+  public async postFile(req: express.Request): Promise<SasViyaResponse> {
     const jsonResponse = responsesJson["/files/files"];
 
     return {
@@ -400,10 +362,8 @@ export class SasViyaController {
     };
   }
 
-  @Get("/files/files/:id/content")
-  public async getFileContent(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Get("/files/files/:id/content")
+  public async getFileContent(req: express.Request): Promise<SasViyaResponse> {
     const state = req.query.state;
     const urlWithoutQuery = req.originalUrl.split("?")[0];
 
@@ -433,9 +393,9 @@ export class SasViyaController {
     };
   }
 
-  @Get("/jobDefinitions")
+  // @Get("/jobDefinitions")
   public async getJobDefinitions(
-    @Request() req: express.Request
+    req: express.Request
   ): Promise<SasViyaResponse> {
     const redirectToSub = req.query.state;
     const redirect = `${redirectToSub}?state=auth`;
@@ -446,9 +406,9 @@ export class SasViyaController {
     };
   }
 
-  @Get("/jobDefinitions/definitions/:id")
+  // @Get("/jobDefinitions/definitions/:id")
   public async getJobDefinitionDetails(
-    @Request() req: express.Request
+    req: express.Request
   ): Promise<SasViyaResponse> {
     const state = req.query.state;
     const urlWithoutQuery = req.originalUrl.split("?")[0];
@@ -468,10 +428,8 @@ export class SasViyaController {
     };
   }
 
-  @Post("/jobExecution/jobs")
-  public async submitJob(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Post("/jobExecution/jobs")
+  public async submitJob(req: express.Request): Promise<SasViyaResponse> {
     const body = req.body;
     const program = body.arguments._program;
 
@@ -507,10 +465,8 @@ export class SasViyaController {
     };
   }
 
-  @Get("/jobExecution/jobs/:id")
-  public async getJob(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Get("/jobExecution/jobs/:id")
+  public async getJob(req: express.Request): Promise<SasViyaResponse> {
     const jsonResponse = responsesJson["/jobExecution/jobs/:id"];
 
     return {
@@ -518,10 +474,8 @@ export class SasViyaController {
     };
   }
 
-  @Get("/jobExecution/jobs/:id/state")
-  public async getJobState(
-    @Request() req: express.Request
-  ): Promise<SasViyaResponse> {
+  // @Get("/jobExecution/jobs/:id/state")
+  public async getJobState(req: express.Request): Promise<SasViyaResponse> {
     // We will keep it as a reference if needed later
     // const wait = req.query.wait ? parseInt((req.query.wait).toString()) : 100
 

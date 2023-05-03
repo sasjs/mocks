@@ -1,5 +1,6 @@
 import express from "express";
-import { SasViyaResponse } from "../controllers/sasviya";
+import { SasViyaResponse } from "../types/viya/sas-viya-response";
+import { SasViyaResponseType } from "../types/viya/sas-viya-response-type";
 
 /**
  * Reusable function that checks whether controller response is json or redirect
@@ -21,7 +22,7 @@ export const handleReturnOrRedirect = (
   if (!response.status) response.status = 200;
 
   try {
-    if (!response.type) response.type = "json";
+    if (!response.type) response.type = SasViyaResponseType.json;
 
     if (response.type === "json")
       res.status(response.status).json(response.content);
