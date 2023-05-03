@@ -1,1 +1,1 @@
-export * from "./csrfProtection";
+export * from './csrfProtection'
