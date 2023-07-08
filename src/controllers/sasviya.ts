@@ -84,12 +84,15 @@ export class SasViyaController {
 
   // @Post("/SASJobExecution")
   public async executeJob(req: express.Request): Promise<SasViyaResponse> {
-    const body = req.body
     const program = req.query._program
 
-    console.log('program', program)
+    const vars = {
+      ...req.query,
+      ...req.body.variables,
+      _requestMethod: req.method,
+      _driveLoc: process.driveLoc
+    }
 
-    const vars = { ...body.arguments }
     const otherArgs = {}
 
     let jsonResponse = {}
@@ -145,9 +148,13 @@ export class SasViyaController {
     const body = req.body
     const program = req.body.variables._program
 
-    console.log('program', program)
+    const vars = {
+      ...req.query,
+      ...req.body.variables,
+      _requestMethod: req.method,
+      _driveLoc: process.driveLoc
+    }
 
-    const vars = { ...body.arguments }
     const otherArgs = {}
 
     try {
@@ -433,9 +440,13 @@ export class SasViyaController {
     const body = req.body
     const program = body.arguments._program
 
-    console.log('program', program)
+    const vars = {
+      ...req.query,
+      ...req.body.variables,
+      _requestMethod: req.method,
+      _driveLoc: process.driveLoc
+    }
 
-    const vars = { ...body.arguments }
     const otherArgs = {}
 
     try {

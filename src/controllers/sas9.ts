@@ -134,9 +134,11 @@ export class Sas9Controller {
       _requestMethod: req.method,
       _driveLoc: process.driveLoc
     }
+    
     const filesNamesMap = req.files?.length
       ? makeFilesNamesMap(req.files as MulterFile[])
       : null
+      
     const otherArgs = { filesNamesMap: filesNamesMap }
     const codePath = await getFilePath(program + '.js')
 
@@ -145,6 +147,7 @@ export class Sas9Controller {
         programPath: codePath,
         vars: vars,
         otherArgs: otherArgs,
+        session: req.sasjsSession,
         forceStringResult: true
       })
 

@@ -33,3 +33,7 @@ LOG_FORMAT_MORGAN=
 # This location is for server logs with classical UNIX logrotate behavior
 LOG_LOCATION=./logs
 ```
+
+## Session expiry
+
+@sasjs/adapter will drop expired sesssions so in mocked `responses.json` for viya, we put `creationTimeStamp` in future.
