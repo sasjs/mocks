@@ -21,6 +21,7 @@ SASJS_ROOT=./sasjs_root
 DRIVE_LOCATION=./sasjs_root/drive
 
 # Location for mock services (JS)
+# 'services' folder inside will be picked up automatically
 SERVICES_LOCATION=./sas/mocks
 
 # Path to Node.js executable
