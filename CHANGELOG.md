@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/sasjs/mocks/compare/v1.0.0...v1.0.1) (2023-07-08)
+
+
+### Bug Fixes
+
+* responses session duration, adding more params in request ([392db72](https://github.com/sasjs/mocks/commit/392db727c56c10115f2624574bb230b2e00dfb31))
+
 # 1.0.0 (2023-05-03)
 
 
